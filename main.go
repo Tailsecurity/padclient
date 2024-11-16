@@ -85,9 +85,10 @@ func main() {
 
 	// Initialize the Bubble Tea program with the model
 	p := tea.NewProgram(m)
-	if err := p.Start(); err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
+
+	// Run the Bubble Tea program
+	if _, err := p.Run(); err != nil {
+		fmt.Printf("Error running program: %v\n", err)
 	}
 }
 
