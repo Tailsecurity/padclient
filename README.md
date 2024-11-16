@@ -28,6 +28,12 @@ A secure messaging client that communicates over Tailscale, using the Bubble Tea
 - Message broadcasting to all connected clients.
 - Cross-platform support across macOS, Linux, Windows, and (experimentally) FreeBSD.
 
+## Server Version Compatibility
+
+| Client Version | Server Version | Compatibility |
+| -------------- | -------------- | ------------- |
+| 0.1.1          | 0.2.x          | :white_check_mark: |
+
 ## Prerequisites
 
 - [Go](https://golang.org/dl/) 1.23 or higher.
