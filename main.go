@@ -11,6 +11,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textinput" // Text input component
 	"github.com/charmbracelet/bubbles/viewport"  // Viewport component for scrolling messages
@@ -204,12 +205,13 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case incomingMessage:
 		// Handle incoming messages from other clients
 		var prefix string
+		var current_date = time.Now().Format("2006-01-02 15:04:05")
 		if msg.isBroadcast {
-			prefix = fmt.Sprintf("Broadcast from %s: ", msg.senderID)
+			prefix = fmt.Sprintf("%s (Broadcast): ", msg.senderID)
 		} else {
-			prefix = fmt.Sprintf("Message from %s: ", msg.senderID)
+			prefix = fmt.Sprintf("%s: ", msg.senderID)
 		}
-		m.appendMessage(prefix + msg.content)
+		m.appendMessage(current_date + " " + prefix + msg.content)
 		return m, waitForServerMessage(m.messageChan)
 	case kickedMsg:
 		// Handle being kicked by the operator
