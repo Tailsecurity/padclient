@@ -1,8 +1,8 @@
 # Padserve Client
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Go](https://github.com/drewwalton19216801/padclient/actions/workflows/go.yml/badge.svg)](https://github.com/drewwalton19216801/padclient/actions/workflows/go.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Go](https://github.com/tailsecurity/padclient/actions/workflows/go.yml/badge.svg)](https://github.com/tailsecurity/padclient/actions/workflows/go.yml)
 
-A secure messaging client that communicates over Tailscale, using the Bubble Tea TUI framework. This client is designed to work with the [Padserve secure messaging server](https://github.com/drewwalton19216801/padserve) and provides a terminal-based user interface for sending and receiving encrypted messages.
+A secure messaging client that communicates over Tailscale, using the Bubble Tea TUI framework. This client is designed to work with the [Padserve secure messaging server](https://github.com/tailsecurity/padserve) and provides a terminal-based user interface for sending and receiving encrypted messages.
 
 ## Table of Contents
 
@@ -38,7 +38,7 @@ A secure messaging client that communicates over Tailscale, using the Bubble Tea
 
 - [Go](https://golang.org/dl/) 1.23 or higher.
 - [Tailscale](https://tailscale.com/) installed and connected.
-- A Padserve [secure messaging server](https://github.com/drewwalton19216801/padserve) set up on your Tailscale network.
+- A Padserve [secure messaging server](https://github.com/tailsecurity/padserve) set up on your Tailscale network.
 - Tailscale network configured with the server and clients.
 
 ## Installation
@@ -46,7 +46,7 @@ A secure messaging client that communicates over Tailscale, using the Bubble Tea
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/drewwalton19216801/padclient.git
+   git clone https://github.com/tailsecurity/padclient.git
    cd padclient
    ```
 
@@ -243,4 +243,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE.txt) f
 
 - [Bubble Tea](https://github.com/charmbracelet/bubbletea) for the TUI framework.
 - [Tailscale](https://tailscale.com/) for the secure network overlay.
-- [tailutils](https://github.com/drewwalton19216801/tailutils) for Tailscale utilities.
+- [tailutils](https://github.com/tailsecurity/tailutils) for Tailscale utilities.
