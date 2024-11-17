@@ -32,7 +32,7 @@ A secure messaging client that communicates over Tailscale, using the Bubble Tea
 
 | Client Version | Server Version | Compatibility |
 | -------------- | -------------- | ------------- |
-| 0.1.1          | 0.2.x          | :white_check_mark: |
+| 0.1.1          | 0.1.x          | :white_check_mark: |
 
 ## Prerequisites
 
