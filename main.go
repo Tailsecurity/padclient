@@ -57,6 +57,9 @@ type model struct {
 	historyIndex int             // Current index in the history (-1 means not navigating)
 	hashedSecret []byte          // Hashed secret for AES encryption
 	messageChan  chan tea.Msg    // Channel for incoming messages from the server
+	width        int             // Terminal width
+	height       int             // Terminal height
+	ready        bool            // Whether the terminal size has been initialized
 }
 
 func main() {
@@ -99,12 +102,12 @@ func (m *model) Init() tea.Cmd {
 	m.input = textinput.New()
 	m.input.Placeholder = "Type a command"
 	m.input.CharLimit = 256
-	m.input.Width = 50
 	m.updatePrompt() // Set the initial prompt with client ID and operator status
 	m.input.Focus()
 
-	// Initialize the viewport for displaying messages
-	m.viewport = viewport.New(80, 20) // Width and Height of the viewport
+	// Initialize the viewport for displaying messages with default size
+	// The actual size will be set when we receive the window size message
+	m.viewport = viewport.New(80, 20)
 	m.viewport.YPosition = 0
 	m.viewport.HighPerformanceRendering = false      // Set to true if flickering occurs
 	m.viewport.SetContent("Connecting to server...") // Initial content
@@ -119,6 +122,13 @@ func (m *model) Init() tea.Cmd {
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		// Handle terminal resize events
+		m.width = msg.Width
+		m.height = msg.Height
+		m.ready = true
+		m.updateLayout()
+		return m, nil
 	case tea.KeyMsg:
 		// Handle key presses for input and viewport scrolling
 		switch msg.Type {
@@ -183,6 +193,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.hashedSecret = msg.hashedSecret
 		m.isOperator = msg.isOperator
 		m.updatePrompt() // Update the prompt to reflect operator status
+		// Update layout in case we connected after receiving window size
+		if m.ready {
+			m.updateLayout()
+		}
 		m.messageChan = make(chan tea.Msg)
 		go readMessages(m.conn, m.hashedSecret, m.messageChan)
 		m.appendMessage("Connected to the server. Type your commands below:")
@@ -248,11 +262,66 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View renders the UI
 func (m *model) View() string {
+	if !m.ready {
+		return "\n  Initializing..."
+	}
+
+	// For very small terminals, show a simplified view
+	if m.height < 3 {
+		return fmt.Sprintf("Terminal too small (%dx%d). Need at least 20x3.", m.width, m.height)
+	}
+
 	return fmt.Sprintf(
 		"%s\n%s",
 		m.viewport.View(), // Render the viewport above
 		m.input.View(),    // Render the input field below
 	)
+}
+
+// updateLayout adjusts the viewport and input dimensions based on terminal size
+func (m *model) updateLayout() {
+	if m.width <= 0 || m.height <= 0 {
+		return
+	}
+
+	// Set minimum dimensions for usability
+	minWidth := 20
+	minHeight := 3
+
+	width := m.width
+	height := m.height
+
+	// Enforce minimum dimensions
+	if width < minWidth {
+		width = minWidth
+	}
+	if height < minHeight {
+		height = minHeight
+	}
+
+	// Reserve one line for the input field and one line for spacing
+	viewportHeight := height - 2
+	if viewportHeight < 1 {
+		viewportHeight = 1
+	}
+
+	// Update viewport dimensions
+	m.viewport.Width = width
+	m.viewport.Height = viewportHeight
+
+	// Update input width to match terminal width, but don't exceed the screen width
+	inputWidth := width
+	if inputWidth > 200 { // Cap very wide terminals for readability
+		inputWidth = 200
+	}
+	m.input.Width = inputWidth
+
+	// If we have messages, refresh the viewport content to handle word wrapping
+	if len(m.messages) > 0 {
+		content := strings.Join(m.messages, "\n")
+		m.viewport.SetContent(content)
+		m.viewport.GotoBottom()
+	}
 }
 
 // handleInput processes the user input commands
